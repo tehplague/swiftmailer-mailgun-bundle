@@ -1,0 +1,26 @@
+{
+    "name" : "cspoo/swiftmailer-mailgun-bundle",
+    "type" : "symfony-bundle",
+    "description" : "Swiftmailer Mailgun bundle",
+    "keywords" : ["E-Mail", "Swiftmailer", "mailgun"],
+    "homepage" : "https://github.com/vbinsider/swiftmailer-mailgun-bundle",
+    "license" : "GPL",
+    "authors" :
+    [
+        {
+            "name" : "Christian Spoo",
+            "email" : "mail@christian-spoo.info",
+            "homepage" : "http://www.christian-spoo.info/",
+            "role" : "Developer"
+        }
+    ],
+    "minimum-stability" : "beta",
+    "require": {
+        "php": ">=5.3.2",
+        "mailgun/mailgun-php" : "~1.5"
+    },
+    "autoload": {
+        "psr-0": { "cspoo\\Swiftmailer\\MailgunBundle": "" }
+    },
+    "target-dir" : "cspoo/Swiftmailer/MailgunBundle"
+}
