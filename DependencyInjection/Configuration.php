@@ -31,8 +31,10 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
             ->scalarNode('key')
+                ->isRequired()
             ->end()
             ->scalarNode('domain')
+                ->isRequired()
             ->end();
     }
 }
