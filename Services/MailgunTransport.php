@@ -6,7 +6,6 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Mailgun\Mailgun;
 
-use \Swift_Events_EventDispatcher;
 use \Swift_Events_EventListener;
 use \Swift_Events_SendEvent;
 use \Swift_Mime_HeaderSet;
@@ -16,13 +15,7 @@ use \Swift_Transport;
 
 class MailgunTransport extends ContainerAware implements Swift_Transport
 {
-    private $dispatcher = null;
 	private $mailgun = null;
-
-    public function __construct(ContainerInterface $container, Swift_Events_EventDispatcher $dispatcher)
-    {
-        parent::__construct($container);
-    }
 
     /**
      * Not used.
