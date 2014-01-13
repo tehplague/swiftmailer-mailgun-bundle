@@ -27,10 +27,7 @@ class cspooSwiftmailerMailgunExtension extends Extension
 
         $container->setParameter('mailgun.key', $config['key']);
         $container->setParameter('mailgun.domain', $config['domain']);
-    }
 
-    public function getAlias()
-    {
-        return 'cspoo_swiftmailer_mailgun';
+        $container->setAlias('mailgun', 'mailgun.swift_transport.transport');
     }
 }

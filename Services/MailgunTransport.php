@@ -3,11 +3,26 @@
 namespace cspoo\Swiftmailer\MailgunBundle\Services;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Mailgun\Mailgun;
 
-class MailgunTransport extends ContainerAware implements \Swift_Transport
+use \Swift_Events_EventDispatcher;
+use \Swift_Events_EventListener;
+use \Swift_Events_SendEvent;
+use \Swift_Mime_HeaderSet;
+use \Swift_Mime_Message;
+use \Swift_Transport;
+
+
+class MailgunTransport extends ContainerAware implements Swift_Transport
 {
+    private $dispatcher = null;
 	private $mailgun = null;
+
+    public function __construct(ContainerInterface $container, Swift_Events_EventDispatcher $dispatcher)
+    {
+        parent::__construct($container);
+    }
 
     /**
      * Not used.
@@ -42,7 +57,7 @@ class MailgunTransport extends ContainerAware implements \Swift_Transport
      *
      * @return integer
      */
-    public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
+    public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
     	if (!$this->mailgun)
     		$this->createMailgun();
@@ -52,7 +67,7 @@ class MailgunTransport extends ContainerAware implements \Swift_Transport
     	$subjectHeader = $message->getHeaders()->get('Subject');
 
         if (!$toHeader) {
-            throw new \Swift_TransportException(
+            throw new Swift_TransportException(
                 'Cannot send message without a recipient'
             );
         }
@@ -81,7 +96,7 @@ class MailgunTransport extends ContainerAware implements \Swift_Transport
      *
      * @param Swift_Events_EventListener $plugin
      */
-    public function registerPlugin(\Swift_Events_EventListener $plugin)
+    public function registerPlugin(Swift_Events_EventListener $plugin)
     {
     }
 }
