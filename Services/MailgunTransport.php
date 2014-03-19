@@ -75,7 +75,7 @@ class MailgunTransport extends ContainerAware implements Swift_Transport
     		'to' => $to
     	), $message->toString());
 
-        return 0;
+        return 1;
     }
 
     private function createMailgun()
