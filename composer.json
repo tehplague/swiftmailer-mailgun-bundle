@@ -3,7 +3,7 @@
     "type" : "symfony-bundle",
     "description" : "Swiftmailer Mailgun bundle",
     "keywords" : ["E-Mail", "Swiftmailer", "mailgun"],
-    "homepage" : "https://github.com/vbinsider/swiftmailer-mailgun-bundle",
+    "homepage" : "https://github.com/tehplague/swiftmailer-mailgun-bundle",
     "license" : "GPL",
     "authors" :
     [
