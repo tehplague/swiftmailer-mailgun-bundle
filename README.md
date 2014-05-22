@@ -17,6 +17,34 @@ new cspoo\Swiftmailer\MailgunBundle\cspooSwiftmailerMailgunBundle();
 
 ```
 
+Configure your bundle:
+
+```app/config/config.yml:
+
+parameters:
+    mailgun_key: "Ppokpok"
+    mailgun_domain: "mydomain.com"
+    mailer_transport: mailgun
+
+
+cspoo_swiftmailer_mailgun:
+    key: "%mailgun_key%"
+    domain: "%mailgun_domain%"
+
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
+    username:  "%mailer_user%"
+    password:  "%mailer_password%"
+    spool:     { type: memory }
+
+```
+
+Note that the swiftmailer configuration is the same as the standard one - you just 
+change the mailer_transport parameter.
+
 
 ## Usage:
 
@@ -45,7 +73,7 @@ $mailgun->send($message);
 ```
 
 Todo:
- * [ ] Add mailgun as a separate transport to the normal Swiftmailer service
+ * [x] Add mailgun as a separate transport to the normal Swiftmailer service
  * [ ] Tests
 
 
