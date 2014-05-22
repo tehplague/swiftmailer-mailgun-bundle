@@ -17,7 +17,7 @@
     "minimum-stability" : "beta",
     "require": {
         "php": ">=5.3.2",
-        "mailgun/mailgun-php" : "~1.5"
+        "mailgun/mailgun-php" : ">=1.7"
     },
     "autoload": {
         "psr-0": { "cspoo\\Swiftmailer\\MailgunBundle": "" }
