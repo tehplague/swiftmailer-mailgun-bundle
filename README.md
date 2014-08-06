@@ -13,7 +13,7 @@ composer require "cspoo/swiftmailer-mailgun-bundle"=dev-master
 Also add to your AppKernel:
 
 ```
-new cspoo\Swiftmailer\MailgunBundle\cspooSwiftmailerMailgunBundle();
+new cspoo\Swiftmailer\MailgunBundle\cspooSwiftmailerMailgunBundle(),
 
 ```
 
