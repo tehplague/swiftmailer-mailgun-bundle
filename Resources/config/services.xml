@@ -6,13 +6,18 @@
 
     <parameters>
         <parameter key="mailgun.swift_transport.transport.class">cspoo\Swiftmailer\MailgunBundle\Services\MailgunTransport</parameter>
+        <parameter key="mailgun.class">Mailgun\Mailgun</parameter>
     </parameters>
 
     <services>
+        <service id="mailgun.library" class="%mailgun.class%" public="true">
+            <argument>%mailgun.key%</argument>
+        </service>
+
         <service id="mailgun.swift_transport.transport" class="%mailgun.swift_transport.transport.class%" public="true">
-        	<call method="setContainer">
-        		<argument type="service" id="service_container" />
-        	</call>
+            <argument></argument>
+            <argument type="service" id="mailgun.library"></argument>
+            <argument>%mailgun.domain%</argument>
         </service>
     </services>
 </container>
