@@ -13,9 +13,36 @@ use \Swift_Mime_Message;
 use \Swift_Transport;
 
 
-class MailgunTransport extends ContainerAware implements Swift_Transport
+class MailgunTransport implements Swift_Transport
 {
-	private $mailgun = null;
+    /**
+     * @var \Mailgun\Mailgun mailgun
+     */
+    private $mailgun;
+
+    /**
+     * @var string domain
+     */
+    private $domain;
+
+    /**
+     * The event dispatcher from the plugin API
+     *
+     * @var \Swift_Events_EventDispatcher eventDispatcher
+     */
+    private $eventDispatcher;
+
+    /**
+     * @param \Swift_Events_EventDispatcher $eventDispatcher
+     * @param Mailgun $mailgun
+     * @param $domain
+     */
+    public function __construct(\Swift_Events_EventDispatcher $eventDispatcher, Mailgun $mailgun, $domain)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+        $this->domain = $domain;
+        $this->mailgun = $mailgun;
+    }
 
     /**
      * Not used.
@@ -52,12 +79,15 @@ class MailgunTransport extends ContainerAware implements Swift_Transport
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
-    	if (!$this->mailgun)
-    		$this->createMailgun();
+        if ($evt = $this->eventDispatcher->createSendEvent($this, $message)) {
+            $this->eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
+            if ($evt->bubbleCancelled()) {
+                return 0;
+            }
+        }
 
     	$fromHeader = $message->getHeaders()->get('From');
     	$toHeader = $message->getHeaders()->get('To');
-    	$subjectHeader = $message->getHeaders()->get('Subject');
 
         if (!$toHeader) {
             throw new Swift_TransportException(
@@ -67,21 +97,20 @@ class MailgunTransport extends ContainerAware implements Swift_Transport
 
         $from = $fromHeader->getFieldBody();
         $to = $toHeader->getFieldBody();
-        $subject = $subjectHeader ? $subjectHeader->getFieldBody() : '';
 
-    	$domain = $this->container->getParameter('mailgun.domain');
-    	$this->mailgun->sendMessage($domain, array(
+    	$result = $this->mailgun->sendMessage($this->domain, array(
     		'from' => $from,
     		'to' => $to
     	), $message->toString());
 
-        return 1;
-    }
+        $success = $result->http_response_code == 200;
 
-    private function createMailgun()
-    {
-    	$key = $this->container->getParameter('mailgun.key');
-    	$this->mailgun = new Mailgun($key);
+        if ($evt) {
+            $evt->setResult($success ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
+            $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
+        }
+
+        return 1;
     }
 
     /**
@@ -91,5 +120,6 @@ class MailgunTransport extends ContainerAware implements Swift_Transport
      */
     public function registerPlugin(Swift_Events_EventListener $plugin)
     {
+        $this->eventDispatcher->bindEventListener($plugin);
     }
 }
