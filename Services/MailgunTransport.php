@@ -110,7 +110,7 @@ class MailgunTransport implements Swift_Transport
             $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
-        return 1;
+        return $result->http_response_body->id;
     }
 
     /**
