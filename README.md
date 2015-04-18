@@ -6,47 +6,34 @@ http interface for sending messages.
 
 ## Installation
 
-```
-composer require "cspoo/swiftmailer-mailgun-bundle"=dev-master
+```bash
+composer require cspoo/swiftmailer-mailgun-bundle:dev-master
 ```
 
 Also add to your AppKernel:
 
-```
+```php
 new cspoo\Swiftmailer\MailgunBundle\cspooSwiftmailerMailgunBundle(),
-
 ```
 
-Configure your bundle:
+Configure your application with the credentials you find on the [domain overview](https://mailgun.com/app/domains) on the Mailgun.com dashboard.
 
-```app/config/config.yml:
-
-parameters:
-    mailgun_key: "Ppokpok"
-    mailgun_domain: "mydomain.com"
-    mailer_transport: mailgun
-
-
+``` yaml
+// app/config/config.yml:
 cspoo_swiftmailer_mailgun:
-    key: "%mailgun_key%"
-    domain: "%mailgun_domain%"
-
+    key: "key-xxxxxxxxxx"
+    domain: "mydomain.com"
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: "%mailer_transport%"
-    host:      "%mailer_host%"
-    username:  "%mailer_user%"
-    password:  "%mailer_password%"
-    spool:     { type: memory }
+    transport: "mailgun"
+    spool:     { type: memory } # This will start sending emails on kernel.terminate event
 
 ```
-
 Note that the swiftmailer configuration is the same as the standard one - you just 
 change the mailer_transport parameter.
 
-
-## Usage:
+## Usage
 
 First craft a message:
 
@@ -64,12 +51,10 @@ $message = \Swift_Message::newInstance()
     ;
 ```
 
-Then use the mailgun service to send it:
+Then send it as you normally would with the `mailer` service. Your configuration ensures that you will be using the Mailgun transport.
 
 ```php
-$mailgun = $this->container->get("mailgun.swift_transport.transport");
-
-$mailgun->send($message);
+$this->container->get('mailer')->send($message);
 ```
 
 Todo:
