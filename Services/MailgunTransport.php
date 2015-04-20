@@ -2,16 +2,11 @@
 
 namespace cspoo\Swiftmailer\MailgunBundle\Services;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Mailgun\Mailgun;
-
-use \Swift_Events_EventListener;
-use \Swift_Events_SendEvent;
-use \Swift_Mime_HeaderSet;
-use \Swift_Mime_Message;
-use \Swift_Transport;
-
+use Swift_Events_EventListener;
+use Swift_Events_SendEvent;
+use Swift_Mime_Message;
+use Swift_Transport;
 
 class MailgunTransport implements Swift_Transport
 {
@@ -26,7 +21,7 @@ class MailgunTransport implements Swift_Transport
     private $domain;
 
     /**
-     * The event dispatcher from the plugin API
+     * The event dispatcher from the plugin API.
      *
      * @var \Swift_Events_EventDispatcher eventDispatcher
      */
@@ -34,7 +29,7 @@ class MailgunTransport implements Swift_Transport
 
     /**
      * @param \Swift_Events_EventDispatcher $eventDispatcher
-     * @param Mailgun $mailgun
+     * @param Mailgun                       $mailgun
      * @param $domain
      */
     public function __construct(\Swift_Events_EventDispatcher $eventDispatcher, Mailgun $mailgun, $domain)
@@ -49,7 +44,7 @@ class MailgunTransport implements Swift_Transport
      */
     public function isStarted()
     {
-    	return true;
+        return true;
     }
 
     /**
@@ -75,7 +70,7 @@ class MailgunTransport implements Swift_Transport
      * @param Swift_Mime_Message $message
      * @param string[]           $failedRecipients An array of failures by-reference
      *
-     * @return integer
+     * @return integer number of mails sent
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
@@ -86,11 +81,11 @@ class MailgunTransport implements Swift_Transport
             }
         }
 
-    	$fromHeader = $message->getHeaders()->get('From');
-    	$toHeader = $message->getHeaders()->get('To');
+        $fromHeader = $message->getHeaders()->get('From');
+        $toHeader = $message->getHeaders()->get('To');
 
         if (!$toHeader) {
-            throw new Swift_TransportException(
+            throw new \Swift_TransportException(
                 'Cannot send message without a recipient'
             );
         }
@@ -98,10 +93,10 @@ class MailgunTransport implements Swift_Transport
         $from = $fromHeader->getFieldBody();
         $to = $toHeader->getFieldBody();
 
-    	$result = $this->mailgun->sendMessage($this->domain, array(
-    		'from' => $from,
-    		'to' => $to
-    	), $message->toString());
+        $result = $this->mailgun->sendMessage($this->domain, array(
+            'from' => $from,
+            'to' => $to,
+        ), $message->toString());
 
         $success = $result->http_response_code == 200;
 
