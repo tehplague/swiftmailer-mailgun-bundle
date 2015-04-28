@@ -81,7 +81,6 @@ class MailgunTransport implements Swift_Transport
             }
         }
 
-        $fromHeader = $message->getHeaders()->get('From');
         $toHeader = $message->getHeaders()->get('To');
 
         if (!$toHeader) {
@@ -90,11 +89,9 @@ class MailgunTransport implements Swift_Transport
             );
         }
 
-        $from = $fromHeader->getFieldBody();
         $to = $toHeader->getFieldBody();
 
         $result = $this->mailgun->sendMessage($this->domain, array(
-            'from' => $from,
             'to' => $to,
         ), $message->toString());
 
