@@ -81,27 +81,25 @@ class MailgunTransport implements Swift_Transport
             }
         }
 
-        $fromHeader = $message->getHeaders()->get('From');
-        $toHeader = $message->getHeaders()->get('To');
-
-        if (!$toHeader) {
+        if (null === $message->getHeaders()->get('To')) {
             throw new \Swift_TransportException(
                 'Cannot send message without a recipient'
             );
         }
 
-        $from = $fromHeader->getFieldBody();
-        $to = $toHeader->getFieldBody();
+        $headerNames = array('from', 'to', 'bcc', 'cc');
+        $messageHeaders = $message->getHeaders();
+        $postData = array();
+        foreach ($headerNames as $name) {
+            if (null !== $tmp = $messageHeaders->get($name)) {
+                $postData[$name] = $tmp->getFieldBody();
+            }
+        }
 
-        $result = $this->mailgun->sendMessage($this->domain, array(
-            'from' => $from,
-            'to' => $to,
-        ), $message->toString());
-
-        $success = $result->http_response_code == 200;
+        $result = $this->mailgun->sendMessage($this->domain, $postData, $message->toString());
 
         if ($evt) {
-            $evt->setResult($success ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
+            $evt->setResult($result->http_response_code == 200 ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
             $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
