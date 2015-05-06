@@ -87,15 +87,7 @@ class MailgunTransport implements Swift_Transport
             );
         }
 
-        $headerNames = array('from', 'to', 'bcc', 'cc');
-        $messageHeaders = $message->getHeaders();
-        $postData = array();
-        foreach ($headerNames as $name) {
-            if (null !== $tmp = $messageHeaders->get($name)) {
-                $postData[$name] = $tmp->getFieldBody();
-            }
-        }
-
+        $postData = $this->prepareRecipients($message);
         $result = $this->mailgun->sendMessage($this->domain, $postData, $message->toString());
 
         if ($evt) {
@@ -114,5 +106,32 @@ class MailgunTransport implements Swift_Transport
     public function registerPlugin(Swift_Events_EventListener $plugin)
     {
         $this->eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * @param Swift_Mime_Message $message
+     *
+     * @return array
+     */
+    protected function prepareRecipients(Swift_Mime_Message $message)
+    {
+        $headerNames = array('from', 'to', 'bcc', 'cc');
+        $messageHeaders = $message->getHeaders();
+        $postData = array();
+        foreach ($headerNames as $name) {
+            /** @var \Swift_Mime_Headers_MailboxHeader $h */
+            $h = $messageHeaders->get($name);
+            $postData[$name] = $h === null ? array() : $h->getAddresses();
+        }
+
+        // Merge 'bcc' and 'cc' into 'to'.
+        $postData['to'] = array_merge($postData['to'], $postData['bcc'], $postData['cc']);
+        unset($postData['bcc']);
+        unset($postData['cc']);
+
+        // Remove Bcc to make sure it is hidden
+        $messageHeaders->removeAll('bcc');
+
+        return $postData;
     }
 }
