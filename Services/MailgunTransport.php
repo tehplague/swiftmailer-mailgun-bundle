@@ -81,27 +81,17 @@ class MailgunTransport implements Swift_Transport
             }
         }
 
-        $fromHeader = $message->getHeaders()->get('From');
-        $toHeader = $message->getHeaders()->get('To');
-
-        if (!$toHeader) {
+        if (null === $message->getHeaders()->get('To')) {
             throw new \Swift_TransportException(
                 'Cannot send message without a recipient'
             );
         }
 
-        $from = $fromHeader->getFieldBody();
-        $to = $toHeader->getFieldBody();
-
-        $result = $this->mailgun->sendMessage($this->domain, array(
-            'from' => $from,
-            'to' => $to,
-        ), $message->toString());
-
-        $success = $result->http_response_code == 200;
+        $postData = $this->prepareRecipients($message);
+        $result = $this->mailgun->sendMessage($this->domain, $postData, $message->toString());
 
         if ($evt) {
-            $evt->setResult($success ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
+            $evt->setResult($result->http_response_code == 200 ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
             $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
@@ -116,5 +106,32 @@ class MailgunTransport implements Swift_Transport
     public function registerPlugin(Swift_Events_EventListener $plugin)
     {
         $this->eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * @param Swift_Mime_Message $message
+     *
+     * @return array
+     */
+    protected function prepareRecipients(Swift_Mime_Message $message)
+    {
+        $headerNames = array('from', 'to', 'bcc', 'cc');
+        $messageHeaders = $message->getHeaders();
+        $postData = array();
+        foreach ($headerNames as $name) {
+            /** @var \Swift_Mime_Headers_MailboxHeader $h */
+            $h = $messageHeaders->get($name);
+            $postData[$name] = $h === null ? array() : $h->getAddresses();
+        }
+
+        // Merge 'bcc' and 'cc' into 'to'.
+        $postData['to'] = array_merge($postData['to'], $postData['bcc'], $postData['cc']);
+        unset($postData['bcc']);
+        unset($postData['cc']);
+
+        // Remove Bcc to make sure it is hidden
+        $messageHeaders->removeAll('bcc');
+
+        return $postData;
     }
 }
