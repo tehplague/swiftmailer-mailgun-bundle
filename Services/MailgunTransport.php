@@ -40,6 +40,16 @@ class MailgunTransport implements Swift_Transport
     }
 
     /**
+     * Get the special o:* headers. https://documentation.mailgun.com/api-sending.html#sending.
+     *
+     * @return array
+     */
+    public static function getMailgunHeaders()
+    {
+        return array('a:tag', 'o:campaign', 'o:deliverytime', 'o:dkim', 'o:testmode', 'o:tracking', 'o:tracking-clicks', 'o:tracking-opens');
+    }
+
+    /**
      * Not used.
      */
     public function isStarted()
@@ -70,7 +80,7 @@ class MailgunTransport implements Swift_Transport
      * @param Swift_Mime_Message $message
      * @param string[]           $failedRecipients An array of failures by-reference
      *
-     * @return integer number of mails sent
+     * @return int number of mails sent
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
@@ -87,7 +97,7 @@ class MailgunTransport implements Swift_Transport
             );
         }
 
-        $postData = $this->prepareRecipients($message);
+        $postData = $this->getPostData($message);
         $result = $this->mailgun->sendMessage($this->domain, $postData, $message->toString());
 
         if ($evt) {
@@ -106,6 +116,30 @@ class MailgunTransport implements Swift_Transport
     public function registerPlugin(Swift_Events_EventListener $plugin)
     {
         $this->eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * Looks at the message headers to find post data.
+     *
+     * @param Swift_Mime_Message $message
+     */
+    protected function getPostData(Swift_Mime_Message $message)
+    {
+        // get "form", "to" etc..
+        $postData = $this->prepareRecipients($message);
+
+        $mailgunHeaders = self::getMailgunHeaders();
+        $messageHeaders = $message->getHeaders();
+
+        foreach ($mailgunHeaders as $headerName) {
+            /** @var \Swift_Mime_Headers_MailboxHeader $value */
+            if (null !== $value = $messageHeaders->get($headerName)) {
+                $postData[$headerName] = $value->getFieldBody();
+                $messageHeaders->removeAll($headerName);
+            }
+        }
+
+        return $postData;
     }
 
     /**
