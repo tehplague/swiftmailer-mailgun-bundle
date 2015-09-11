@@ -40,6 +40,16 @@ class MailgunTransport implements Swift_Transport
     }
 
     /**
+     * Set the domain.
+     *
+     * @param string $domain
+     */
+    public function setDomain($domain)
+    {
+        $this->domain = $domain;
+    }
+
+    /**
      * Not used.
      */
     public function isStarted()
