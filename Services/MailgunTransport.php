@@ -90,13 +90,8 @@ class MailgunTransport implements Swift_Transport
         }
 
         $postData = $this->prepareRecipients($message);
-        $messageHeaders = $message->getHeaders();
-        if ($messageHeaders->has(self::DOMAIN_HEADER)) {
-            $domain = $messageHeaders->get(self::DOMAIN_HEADER);
-            $messageHeaders->removeAll(self::DOMAIN_HEADER);
-        } else {
-            $domain = $this->domain;
-        }
+        $domain = $this->getDomain($message);
+
         $result = $this->mailgun->sendMessage($domain, $postData, $message->toString());
 
         if ($evt) {
@@ -142,5 +137,18 @@ class MailgunTransport implements Swift_Transport
         $messageHeaders->removeAll('bcc');
 
         return $postData;
+    }
+
+    private function getDomain(Swift_Mime_Message $message)
+    {
+        $messageHeaders = $message->getHeaders();
+        if ($messageHeaders->has(self::DOMAIN_HEADER)) {
+            $domain = $messageHeaders->get(self::DOMAIN_HEADER)->getValue();
+            $messageHeaders->removeAll(self::DOMAIN_HEADER);
+
+            return $domain;
+        }
+
+        return $this->domain;
     }
 }
