@@ -10,6 +10,8 @@ use Swift_Transport;
 
 class MailgunTransport implements Swift_Transport
 {
+    const DOMAIN_HEADER = 'mg:domain';
+
     /**
      * @var \Mailgun\Mailgun mailgun
      */
@@ -88,7 +90,9 @@ class MailgunTransport implements Swift_Transport
         }
 
         $postData = $this->prepareRecipients($message);
-        $result = $this->mailgun->sendMessage($this->domain, $postData, $message->toString());
+        $domain = $this->getDomain($message);
+
+        $result = $this->mailgun->sendMessage($domain, $postData, $message->toString());
 
         if ($evt) {
             $evt->setResult($result->http_response_code == 200 ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
@@ -133,5 +137,18 @@ class MailgunTransport implements Swift_Transport
         $messageHeaders->removeAll('bcc');
 
         return $postData;
+    }
+
+    private function getDomain(Swift_Mime_Message $message)
+    {
+        $messageHeaders = $message->getHeaders();
+        if ($messageHeaders->has(self::DOMAIN_HEADER)) {
+            $domain = $messageHeaders->get(self::DOMAIN_HEADER)->getValue();
+            $messageHeaders->removeAll(self::DOMAIN_HEADER);
+
+            return $domain;
+        }
+
+        return $this->domain;
     }
 }
