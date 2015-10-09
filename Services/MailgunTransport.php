@@ -172,7 +172,14 @@ class MailgunTransport implements Swift_Transport
         return $postData;
     }
 
-    private function getDomain(Swift_Mime_Message $message)
+    /**
+     * If the message header got a domain we should use that instead of $this->domain.
+     *
+     * @param Swift_Mime_Message $message
+     *
+     * @return string
+     */
+    protected function getDomain(Swift_Mime_Message $message)
     {
         $messageHeaders = $message->getHeaders();
         if ($messageHeaders->has(self::DOMAIN_HEADER)) {
