@@ -10,6 +10,8 @@ use Swift_Transport;
 
 class MailgunTransport implements Swift_Transport
 {
+    const DOMAIN_HEADER = 'mg:domain';
+
     /**
      * @var \Mailgun\Mailgun mailgun
      */
@@ -37,6 +39,16 @@ class MailgunTransport implements Swift_Transport
         $this->eventDispatcher = $eventDispatcher;
         $this->domain = $domain;
         $this->mailgun = $mailgun;
+    }
+
+    /**
+     * Get the special o:* headers. https://documentation.mailgun.com/api-sending.html#sending.
+     *
+     * @return array
+     */
+    public static function getMailgunHeaders()
+    {
+        return array('a:tag', 'o:campaign', 'o:deliverytime', 'o:dkim', 'o:testmode', 'o:tracking', 'o:tracking-clicks', 'o:tracking-opens');
     }
 
     /**
@@ -70,7 +82,7 @@ class MailgunTransport implements Swift_Transport
      * @param Swift_Mime_Message $message
      * @param string[]           $failedRecipients An array of failures by-reference
      *
-     * @return integer number of mails sent
+     * @return int number of mails sent
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
@@ -87,8 +99,9 @@ class MailgunTransport implements Swift_Transport
             );
         }
 
-        $postData = $this->prepareRecipients($message);
-        $result = $this->mailgun->sendMessage($this->domain, $postData, $message->toString());
+        $postData = $this->getPostData($message);
+        $domain = $this->getDomain($message);
+        $result = $this->mailgun->sendMessage($domain, $postData, $message->toString());
 
         if ($evt) {
             $evt->setResult($result->http_response_code == 200 ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
@@ -106,6 +119,30 @@ class MailgunTransport implements Swift_Transport
     public function registerPlugin(Swift_Events_EventListener $plugin)
     {
         $this->eventDispatcher->bindEventListener($plugin);
+    }
+
+    /**
+     * Looks at the message headers to find post data.
+     *
+     * @param Swift_Mime_Message $message
+     */
+    protected function getPostData(Swift_Mime_Message $message)
+    {
+        // get "form", "to" etc..
+        $postData = $this->prepareRecipients($message);
+
+        $mailgunHeaders = self::getMailgunHeaders();
+        $messageHeaders = $message->getHeaders();
+
+        foreach ($mailgunHeaders as $headerName) {
+            /** @var \Swift_Mime_Headers_MailboxHeader $value */
+            if (null !== $value = $messageHeaders->get($headerName)) {
+                $postData[$headerName] = $value->getFieldBody();
+                $messageHeaders->removeAll($headerName);
+            }
+        }
+
+        return $postData;
     }
 
     /**
@@ -133,5 +170,25 @@ class MailgunTransport implements Swift_Transport
         $messageHeaders->removeAll('bcc');
 
         return $postData;
+    }
+
+    /**
+     * If the message header got a domain we should use that instead of $this->domain.
+     *
+     * @param Swift_Mime_Message $message
+     *
+     * @return string
+     */
+    protected function getDomain(Swift_Mime_Message $message)
+    {
+        $messageHeaders = $message->getHeaders();
+        if ($messageHeaders->has(self::DOMAIN_HEADER)) {
+            $domain = $messageHeaders->get(self::DOMAIN_HEADER)->getValue();
+            $messageHeaders->removeAll(self::DOMAIN_HEADER);
+
+            return $domain;
+        }
+
+        return $this->domain;
     }
 }
