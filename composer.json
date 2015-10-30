@@ -21,7 +21,7 @@
         "mailgun/mailgun-php" : ">=1.7"
     },
     "suggest": {
-        "azine/mailgunwebhooks-bundle": "Allows to handle Mailgun event webhooks",
+        "azine/mailgunwebhooks-bundle": "Allows to handle Mailgun event webhooks"
     },
     "autoload": {
         "psr-0": { "cspoo\\Swiftmailer\\MailgunBundle": "" }
