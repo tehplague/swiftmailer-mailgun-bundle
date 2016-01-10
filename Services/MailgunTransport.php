@@ -48,7 +48,7 @@ class MailgunTransport implements Swift_Transport
      */
     public static function getMailgunHeaders()
     {
-        return array('a:tag', 'o:campaign', 'o:deliverytime', 'o:dkim', 'o:testmode', 'o:tracking', 'o:tracking-clicks', 'o:tracking-opens');
+        return array('o:tag', 'o:campaign', 'o:deliverytime', 'o:dkim', 'o:testmode', 'o:tracking', 'o:tracking-clicks', 'o:tracking-opens');
     }
 
     /**
