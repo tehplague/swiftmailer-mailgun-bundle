@@ -82,6 +82,8 @@ class MailgunTransport implements Swift_Transport
      * @param Swift_Mime_Message $message
      * @param string[]           $failedRecipients An array of failures by-reference
      *
+     * @throws \Swift_TransportException
+     * 
      * @return int number of mails sent
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
