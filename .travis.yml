@@ -15,7 +15,7 @@ install:
   - composer update
 
 script:
-  - phpunit
+  - phpunit --coverage-clover=coverage.xml
   
 after_success:
   - if [[ $TRAVIS_PHP_VERSION = 7.* ]]; then pip install --user codecov && codecov ; fi
