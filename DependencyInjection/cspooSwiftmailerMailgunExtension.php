@@ -5,8 +5,8 @@ namespace cspoo\Swiftmailer\MailgunBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
@@ -35,6 +35,10 @@ class cspooSwiftmailerMailgunExtension extends Extension
 
         $container->getDefinition('mailgun.swift_transport.transport')
             ->replaceArgument(0, new Reference('mailgun.swift_transport.eventdispatcher'));
+
+        if (!empty($config['http_client'])) {
+            $container->getDefinition('mailgun.library')->replaceArgument(1, new Reference($config['http_client']));
+        }
 
         //set some alias
         $container->setAlias('mailgun', 'mailgun.swift_transport.transport');

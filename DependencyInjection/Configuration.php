@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('mailgun');
+        $rootNode = $treeBuilder->root('cspoo_swiftmailer_mailgun');
 
         $this->addAPIConfigSection($rootNode);
 
@@ -30,11 +30,9 @@ class Configuration implements ConfigurationInterface
     {
         $rootNode
             ->children()
-            ->scalarNode('key')
-                ->isRequired()
-            ->end()
-            ->scalarNode('domain')
-                ->isRequired()
+                ->scalarNode('key')->isRequired()->end()
+                ->scalarNode('domain')->isRequired()->end()
+                ->scalarNode('http_client')->end()
             ->end();
     }
 }
