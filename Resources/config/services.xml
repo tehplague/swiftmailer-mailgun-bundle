@@ -12,7 +12,7 @@
     <services>
         <service id="mailgun.library" class="%mailgun.class%" public="true">
             <argument>%mailgun.key%</argument>
-            <argument />
+            <argument>null</argument>
         </service>
 
         <service id="mailgun.swift_transport.transport" class="%mailgun.swift_transport.transport.class%" public="true">
