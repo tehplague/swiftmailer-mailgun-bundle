@@ -107,6 +107,12 @@ class MailgunTransport implements Swift_Transport
             $result = $this->mailgun->sendMessage($domain, $postData, $message->toString());
         } catch (\Exception $e) {
             $failedRecipients[] = $message->getHeaders()->get('To');
+            foreach ($message->getCc() as $cc) {
+                $failedRecipients[] = $cc;
+            }
+            foreach ($message->getBcc() as $bcc) {
+                $failedRecipients[] = $bcc;
+            }
 
             return 0;
         }
