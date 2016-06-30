@@ -1,6 +1,6 @@
 <?php
 
-namespace cspoo\Swiftmailer\MailgunBundle\Services;
+namespace cspoo\Swiftmailer\MailgunBundle\Service;
 
 use Mailgun\Mailgun;
 use Swift_Events_EventListener;
