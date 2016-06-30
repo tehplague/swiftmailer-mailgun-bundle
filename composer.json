@@ -30,7 +30,7 @@
         "php-http/httplug-bundle": "To manage your http clients"
     },
     "autoload": {
-        "psr-4": { "cspoo\\Swiftmailer\\MailgunBundle": "" }
+        "psr-4": { "cspoo\\Swiftmailer\\MailgunBundle\\": "" }
     },
     "target-dir" : "cspoo/Swiftmailer/MailgunBundle"
 }
