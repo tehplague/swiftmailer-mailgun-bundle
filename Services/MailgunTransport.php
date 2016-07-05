@@ -103,27 +103,20 @@ class MailgunTransport implements Swift_Transport
 
         $postData = $this->getPostData($message);
         $domain = $this->getDomain($message);
+        $sent = 1;
         try {
             $result = $this->mailgun->sendMessage($domain, $postData, $message->toString());
         } catch (\Exception $e) {
-            $failedRecipients[] = $message->getHeaders()->get('To');
-            foreach ($message->getCc() as $cc) {
-                $failedRecipients[] = $cc;
-            }
-            foreach ($message->getBcc() as $bcc) {
-                $failedRecipients[] = $bcc;
-            }
-
-            return 0;
+            $failedRecipients = $postData['to'];
+            $sent = 0;
         }
-
 
         if ($evt) {
             $evt->setResult($result->http_response_code == 200 ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED);
             $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
-        return 1;
+        return $sent;
     }
 
     /**

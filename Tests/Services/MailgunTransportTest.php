@@ -3,6 +3,7 @@
 namespace cspoo\Swiftmailer\MailgunBundle\Tests\Services;
 
 use cspoo\Swiftmailer\MailgunBundle\Services\MailgunTransport;
+use Mailgun\Connection\Exceptions\MissingEndpoint;
 
 class MailgunTransportTest extends \PHPUnit_Framework_TestCase
 {
@@ -94,6 +95,51 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         // Make sure we remove BCC from the message headers.
         $messageHeaders = $message->getHeaders();
         $this->assertNull($messageHeaders->get('bcc'));
+    }
+
+    public function testSendMessageOk()
+    {
+        $transport = $this->getTransport();
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Foobar')
+            ->setFrom('alice@example.com')
+            ->setTo('bob@example.com')
+            ->setCc('tobias@example.com')
+            ->setBcc('eve@example.com')
+            ->setBody('Message body');
+
+
+        $failed = null;
+        $sent = $transport->send($message, $failed);
+
+        $this->assertEquals(1, $sent);
+        $this->assertNull($failed);
+    }
+
+    public function testSendMessageWithException()
+    {
+        $dispatcher = $this->getMock('Swift_Events_EventDispatcher');
+        $mailgun = $this->getMock('Mailgun\Mailgun');
+        $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com');
+
+        $mailgun->expects($this->once())
+            ->method('sendMessage')
+            ->will($this->throwException(new MissingEndpoint()));
+
+        $message = \Swift_Message::newInstance()
+             ->setSubject('Foobar')
+             ->setFrom('alice@example.com')
+             ->setTo('bob@example.com')
+             ->setCc('tobias@example.com')
+             ->setBcc('eve@example.com')
+             ->setBody('Message body');
+
+        $failed = null;
+        $sent = $transport->send($message, $failed);
+
+        $this->assertEquals(0, $sent);
+        $this->assertEquals(['bob@example.com', 'eve@example.com', 'tobias@example.com'], $failed);
     }
 
     /**
