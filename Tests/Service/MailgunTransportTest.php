@@ -119,8 +119,8 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
 
     public function testSendMessageWithException()
     {
-        $dispatcher = $this->getMock('Swift_Events_EventDispatcher');
-        $mailgun = $this->getMock('Mailgun\Mailgun');
+        $dispatcher = $this->createMock('Swift_Events_EventDispatcher');
+        $mailgun = $this->createMock('Mailgun\Mailgun');
         $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com');
 
         $mailgun->expects($this->once())
@@ -147,8 +147,8 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
      */
     private function getTransport()
     {
-        $dispatcher = $this->getMock('Swift_Events_EventDispatcher');
-        $mailgun = $this->getMock('Mailgun\Mailgun');
+        $dispatcher = $this->createMock('Swift_Events_EventDispatcher');
+        $mailgun = $this->createMock('Mailgun\Mailgun');
         $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com');
 
         return $transport;
