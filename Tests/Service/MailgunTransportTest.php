@@ -1,15 +1,15 @@
 <?php
 
-namespace cspoo\Swiftmailer\MailgunBundle\Tests\Services;
+namespace cspoo\Swiftmailer\MailgunBundle\Tests\Service;
 
-use cspoo\Swiftmailer\MailgunBundle\Services\MailgunTransport;
 use Mailgun\Connection\Exceptions\MissingEndpoint;
+use cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport;
 
 class MailgunTransportTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetPostData()
     {
-        $class = 'cspoo\Swiftmailer\MailgunBundle\Services\MailgunTransport';
+        $class = 'cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport';
         $transport = $this->getMockBuilder($class)
         ->disableOriginalConstructor()
         ->setMethods(array('prepareRecipients'))
@@ -41,7 +41,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
 
     public function testGetDomain()
     {
-        $class = 'cspoo\Swiftmailer\MailgunBundle\Services\MailgunTransport';
+        $class = 'cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport';
         $transport = $this->getTransport();
 
         $method = new \ReflectionMethod($class, 'getDomain');
@@ -63,7 +63,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
 
     public function testPrepareRecipients()
     {
-        $class = 'cspoo\Swiftmailer\MailgunBundle\Services\MailgunTransport';
+        $class = 'cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport';
         $transport = $this->getTransport();
 
         $method = new \ReflectionMethod($class, 'prepareRecipients');
