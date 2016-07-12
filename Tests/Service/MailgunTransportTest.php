@@ -113,7 +113,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $failed = null;
         $sent = $transport->send($message, $failed);
 
-        $this->assertEquals(1, $sent);
+        $this->assertEquals(3, $sent);
         $this->assertNull($failed);
     }
 
@@ -148,9 +148,20 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
     private function getTransport()
     {
         $dispatcher = $this->getMock('Swift_Events_EventDispatcher');
+        $dispatcher->expects($this->any())
+            ->method('createSendEvent')
+            ->willReturn($this->getMockBuilder('Swift_Events_SendEvent')->disableOriginalConstructor()->getMock());
+            
+        
+        
         $mailgun = $this->getMock('Mailgun\Mailgun');
-        $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com');
+        $result = new \stdClass();
+        $result->http_response_code = 200;
 
-        return $transport;
+        $mailgun->expects($this->any())
+            ->method('sendMessage')
+            ->willReturn($result);
+
+        return new MailgunTransport($dispatcher, $mailgun, 'default.com');
     }
 }

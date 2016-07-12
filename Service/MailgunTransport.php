@@ -88,6 +88,8 @@ class MailgunTransport implements Swift_Transport
      */
     public function send(Swift_Mime_Message $message, &$failedRecipients = null)
     {
+        $failedRecipients = (array) $failedRecipients;
+
         if ($evt = $this->eventDispatcher->createSendEvent($this, $message)) {
             $this->eventDispatcher->dispatchEvent($evt, 'beforeSendPerformed');
             if ($evt->bubbleCancelled()) {
@@ -103,7 +105,7 @@ class MailgunTransport implements Swift_Transport
 
         $postData = $this->getPostData($message);
         $domain = $this->getDomain($message);
-        $sent = 1;
+        $sent = count($postData['to']);
         try {
             $result = $this->mailgun->sendMessage($domain, $postData, $message->toString());
             $resultStatus = $result->http_response_code == 200 ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED;
@@ -115,6 +117,7 @@ class MailgunTransport implements Swift_Transport
 
         if ($evt) {
             $evt->setResult($resultStatus);
+            $evt->setFailedRecipients($failedRecipients);
             $this->eventDispatcher->dispatchEvent($evt, 'sendPerformed');
         }
 
