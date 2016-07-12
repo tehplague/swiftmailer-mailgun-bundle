@@ -114,7 +114,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $sent = $transport->send($message, $failed);
 
         $this->assertEquals(3, $sent);
-        $this->assertNull($failed);
+        $this->assertEmpty($failed);
     }
 
     public function testSendMessageWithException()
