@@ -31,6 +31,5 @@
     },
     "autoload": {
         "psr-4": { "cspoo\\Swiftmailer\\MailgunBundle\\": "" }
-    },
-    "target-dir" : "cspoo/Swiftmailer/MailgunBundle"
+    }
 }
