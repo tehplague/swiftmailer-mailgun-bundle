@@ -98,17 +98,16 @@ class MailgunTransport implements Swift_Transport
         }
 
         if (null === $message->getHeaders()->get('To')) {
-            throw new \Swift_TransportException(
-                'Cannot send message without a recipient'
-            );
+            throw new \Swift_TransportException('Cannot send message without a recipient');
         }
 
         $postData = $this->getPostData($message);
         $domain = $this->getDomain($message);
         $sent = count($postData['to']);
+        $postData['message'] = $message->toString();
         try {
-            $result = $this->mailgun->sendMessage($domain, $postData, $message->toString());
-            $resultStatus = $result->http_response_code == 200 ? Swift_Events_SendEvent::RESULT_SUCCESS : Swift_Events_SendEvent::RESULT_FAILED;
+            $this->mailgun->messages()->send($domain, $postData);
+            $resultStatus = Swift_Events_SendEvent::RESULT_SUCCESS;
         } catch (\Exception $e) {
             $failedRecipients = $postData['to'];
             $sent = 0;
