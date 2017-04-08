@@ -5,6 +5,7 @@ namespace Tests\Funtional;
 use cspoo\Swiftmailer\MailgunBundle\cspooSwiftmailerMailgunBundle;
 use cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport;
 use Nyholm\BundleTest\BaseBundleTestCase;
+use Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle;
 
 /**
  * Make sure we can install the bundle on different versions of Symfony.
@@ -20,6 +21,14 @@ class BundleInitializationTest extends BaseBundleTestCase
 
     public function testInitBundle()
     {
+        $kernel = $this->createKernel();
+
+        // Add some configuration
+        $kernel->addConfigFile(__DIR__.'/config.yml');
+
+        // Add some other bundles we depend on
+        $kernel->addBundle(SwiftmailerBundle::class);
+
         // Boot the kernel.
         $this->bootKernel();
 
