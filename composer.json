@@ -19,14 +19,14 @@
         "php": "^5.5 || ^7.0",
         "swiftmailer/swiftmailer": "^5.0",
         "mailgun/mailgun-php": "^2.0",
-        "symfony/dependency-injection": "^2.3 || ^3.0"
+        "symfony/dependency-injection": "^2.7 || ^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8 || ^5.7",
         "matthiasnoback/symfony-dependency-injection-test": "^1.0",
         "nyholm/symfony-bundle-test": "^1.0",
         "symfony/swiftmailer-bundle": "^2.2",
-        "symfony/symfony": "^2.3 || ^3.0"
+        "symfony/symfony": "^2.7 || ^3.0"
     },
     "suggest": {
         "azine/mailgunwebhooks-bundle": "Allows to handle Mailgun event webhooks",
