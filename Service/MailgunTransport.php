@@ -104,10 +104,8 @@ class MailgunTransport implements Swift_Transport
         $postData = $this->getPostData($message);
         $domain = $this->getDomain($message);
         $sent = count($postData['to']);
-        $postData['message'] = [['fileContent' => $message->toString(), 'filename' => 'message']];
-
         try {
-            $this->mailgun->messages()->send($domain, $postData);
+            $this->mailgun->messages()->sendMime($domain, $postData['to'], $message->toString(), $postData);
             $resultStatus = Swift_Events_SendEvent::RESULT_SUCCESS;
         } catch (\Exception $e) {
             $failedRecipients = $postData['to'];
