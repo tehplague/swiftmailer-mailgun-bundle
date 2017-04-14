@@ -40,16 +40,5 @@ class cspooSwiftmailerMailgunExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias('swiftmailer.mailer.transport.mailgun', 'mailgun.swift_transport.transport');
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument('mailgun.swift_transport.transport', 0, 'mailgun.swift_transport.eventdispatcher');
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument('mailgun.library', 1, null);
-    }
-
-    /**
-     * @test
-     */
-    public function after_loading_http_client_is_used()
-    {
-        $this->load(array('http_client'=>'httplug'));
-
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument('mailgun.library', 1, 'httplug');
     }
 }
