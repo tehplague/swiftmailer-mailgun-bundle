@@ -16,14 +16,17 @@
     ],
     "minimum-stability" : "stable",
     "require": {
-        "php": "^5.5|^7.0",
+        "php": "^5.5 || ^7.0",
         "swiftmailer/swiftmailer": "^5.0",
         "mailgun/mailgun-php": "^2.3",
-        "symfony/dependency-injection": "^2.3|^3.0"
+        "symfony/dependency-injection": "^2.7 || ^3.0"
     },
     "require-dev": {
-        "matthiasnoback/symfony-dependency-injection-test": "^0.7.6",
-        "symfony/config": "^2.3|^3.0"
+        "phpunit/phpunit": "^4.8 || ^5.7",
+        "matthiasnoback/symfony-dependency-injection-test": "^1.0",
+        "nyholm/symfony-bundle-test": "^1.0",
+        "symfony/swiftmailer-bundle": "^2.5.1",
+        "symfony/symfony": "^2.7 || ^3.0"
     },
     "suggest": {
         "azine/mailgunwebhooks-bundle": "Allows to handle Mailgun event webhooks",
@@ -31,5 +34,9 @@
     },
     "autoload": {
         "psr-4": { "cspoo\\Swiftmailer\\MailgunBundle\\": "" }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-ci": "vendor/bin/phpunit --coverage-text --coverage-clover=build/coverage.xml"
     }
 }
