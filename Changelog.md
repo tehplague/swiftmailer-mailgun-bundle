@@ -2,6 +2,13 @@
 
 This document will tell you what changes that has been made between versions.
 
+# Changes from 0.3.x to 0.4.0
+
+* Removed `mailgun.library` service and `mailgun.swift_transport.transport.class` parameter.
+* Improved testing
+* Avoid usage of deprecated Mailgun functions. 
+
+
 # Changes from 0.2.x to 0.3.0
 
 * Upgraded from Mailgun client 1.x to 2.x.
