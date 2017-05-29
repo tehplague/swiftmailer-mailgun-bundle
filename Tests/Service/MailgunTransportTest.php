@@ -4,6 +4,8 @@ namespace cspoo\Swiftmailer\MailgunBundle\Tests\Service;
 
 use Mailgun\Connection\Exceptions\MissingEndpoint;
 use cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport;
+use Mailgun\Exception\UnknownErrorException;
+use Mailgun\Model\Message\SendResponse;
 
 class MailgunTransportTest extends \PHPUnit_Framework_TestCase
 {
@@ -123,9 +125,18 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
         $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com');
 
+        $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $messageApi->expects($this->once())
+            ->method('sendMime')
+            ->will($this->throwException(new UnknownErrorException()));
+
         $mailgun->expects($this->once())
-            ->method('sendMessage')
-            ->will($this->throwException(new MissingEndpoint()));
+            ->method('messages')
+            ->willReturn($messageApi);
+
 
         $message = \Swift_Message::newInstance()
              ->setSubject('Foobar')
@@ -152,15 +163,21 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
             ->method('createSendEvent')
             ->willReturn($this->getMockBuilder('Swift_Events_SendEvent')->disableOriginalConstructor()->getMock());
             
-        
-        
-        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
-        $result = new \stdClass();
-        $result->http_response_code = 200;
+
+        $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $messageApi->expects($this->any())
+            ->method('sendMime')
+            ->willReturn(SendResponse::create(['id'=>'123', 'message'=>'OK']));
+
+        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')
+            ->getMock();
 
         $mailgun->expects($this->any())
-            ->method('sendMessage')
-            ->willReturn($result);
+            ->method('messages')
+            ->willReturn($messageApi);
 
         return new MailgunTransport($dispatcher, $mailgun, 'default.com');
     }
