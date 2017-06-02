@@ -32,7 +32,7 @@ Configure your application with the credentials you find on the [domain overview
 cspoo_swiftmailer_mailgun:
     key: "key-xxxxxxxxxx"
     domain: "mydomain.com"
-    http_client: 'httplug.client' # Optional. Defaults to null and uses dicovery to find client. 
+    http_client: 'httplug.client' # Optional. Defaults to null and uses discovery to find client. 
 
 # Swiftmailer Configuration
 swiftmailer:
