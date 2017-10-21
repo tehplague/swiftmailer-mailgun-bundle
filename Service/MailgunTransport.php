@@ -5,7 +5,8 @@ namespace cspoo\Swiftmailer\MailgunBundle\Service;
 use Mailgun\Mailgun;
 use Swift_Events_EventListener;
 use Swift_Events_SendEvent;
-use Swift_Mime_Message;
+use Swift_Message;
+use Swift_Mime_SimpleMessage;
 use Swift_Transport;
 
 class MailgunTransport implements Swift_Transport
@@ -79,14 +80,14 @@ class MailgunTransport implements Swift_Transport
      * Recipient/sender data will be retrieved from the Message API.
      * The return value is the number of recipients who were accepted for delivery.
      *
-     * @param Swift_Mime_Message $message
+     * @param Swift_Mime_SimpleMessage $message
      * @param string[]           $failedRecipients An array of failures by-reference
      *
      * @throws \Swift_TransportException
      * 
      * @return int number of mails sent
      */
-    public function send(Swift_Mime_Message $message, &$failedRecipients = null)
+    public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
         $failedRecipients = (array) $failedRecipients;
 
@@ -135,9 +136,9 @@ class MailgunTransport implements Swift_Transport
     /**
      * Looks at the message headers to find post data.
      *
-     * @param Swift_Mime_Message $message
+     * @param Swift_Message $message
      */
-    protected function getPostData(Swift_Mime_Message $message)
+    protected function getPostData(Swift_Message $message)
     {
         // get "form", "to" etc..
         $postData = $this->prepareRecipients($message);
@@ -157,11 +158,11 @@ class MailgunTransport implements Swift_Transport
     }
 
     /**
-     * @param Swift_Mime_Message $message
+     * @param Swift_Message $message
      *
      * @return array
      */
-    protected function prepareRecipients(Swift_Mime_Message $message)
+    protected function prepareRecipients(Swift_Message $message)
     {
         $headerNames = array('from', 'to', 'bcc', 'cc');
         $messageHeaders = $message->getHeaders();
@@ -186,11 +187,11 @@ class MailgunTransport implements Swift_Transport
     /**
      * If the message header got a domain we should use that instead of $this->domain.
      *
-     * @param Swift_Mime_Message $message
+     * @param Swift_Message $message
      *
      * @return string
      */
-    protected function getDomain(Swift_Mime_Message $message)
+    protected function getDomain(Swift_Message $message)
     {
         $messageHeaders = $message->getHeaders();
         if ($messageHeaders->has(self::DOMAIN_HEADER)) {
@@ -201,5 +202,13 @@ class MailgunTransport implements Swift_Transport
         }
 
         return $this->domain;
+    }
+
+    /**
+     * Not used.
+     */
+    public function ping()
+    {
+        return true;
     }
 }

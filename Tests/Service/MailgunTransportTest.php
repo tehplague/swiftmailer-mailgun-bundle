@@ -24,7 +24,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $method = new \ReflectionMethod($class, 'getPostData');
         $method->setAccessible(true);
 
-        $message = \Swift_Message::newInstance();
+        $message = new \Swift_Message();
         $headers = $message->getHeaders();
         $headers->addTextHeader('o:deliverytime', 'tomorrow');
 
@@ -50,12 +50,12 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
 
         // Test default domain
-        $message = \Swift_Message::newInstance();
+        $message = new \Swift_Message();
         $result = $method->invoke($transport, $message);
         $this->assertEquals('default.com', $result, 'Default domain should be returned when no domain header is used');
 
         // Test with domain header
-        $message = \Swift_Message::newInstance();
+        $message = new \Swift_Message();
         $headers = $message->getHeaders();
         $headers->addTextHeader('mg:domain', 'example.com');
 
@@ -72,8 +72,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
 
         // Test with domain header
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Foobar')
+        $message = (new \Swift_Message('Foobar'))
             ->setFrom('alice@example.com')
             ->setTo('bob@example.com')
             ->setCc('tobias@example.com')
@@ -103,8 +102,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
     {
         $transport = $this->getTransport();
 
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Foobar')
+        $message = (new \Swift_Message('Foobar'))
             ->setFrom('alice@example.com')
             ->setTo('bob@example.com')
             ->setCc('tobias@example.com')
@@ -138,8 +136,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
             ->willReturn($messageApi);
 
 
-        $message = \Swift_Message::newInstance()
-             ->setSubject('Foobar')
+        $message = (new \Swift_Message('Foobar'))
              ->setFrom('alice@example.com')
              ->setTo('bob@example.com')
              ->setCc('tobias@example.com')

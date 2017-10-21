@@ -16,8 +16,8 @@
     ],
     "minimum-stability" : "stable",
     "require": {
-        "php": "^5.5 || ^7.0",
-        "swiftmailer/swiftmailer": "^5.0",
+        "php": ">=7.0.0",
+        "swiftmailer/swiftmailer": "^6.0",
         "mailgun/mailgun-php": "^2.3",
         "symfony/dependency-injection": "^2.7 || ^3.0"
     },
