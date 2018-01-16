@@ -150,6 +150,63 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['bob@example.com', 'eve@example.com', 'tobias@example.com'], $failed);
     }
 
+    public function testSendMessageWithExceptionLogged()
+    {
+        $exceptionMsg = 'Your credentials are incorrect.';
+        $exceptionCode = 401;
+
+        $responseEvt = $this->getMockBuilder('Swift_Events_ResponseEvent')
+            ->setMethods(['getResponse', 'isValid'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $responseEvt->expects($this->any())
+            ->method('isValid')
+            ->will($this->returnValue(true));
+        $responseEvt->expects($this->any())
+            ->method('getResponse')
+            ->will($this->returnValue(''));
+
+        // Ensure dispatcher sends the responseReceived event
+        $dispatcher = $this->getMockBuilder('Swift_Events_SimpleEventDispatcher')
+            ->setMethods(['createSendEvent', 'createResponseEvent', 'dispatchEvent'])
+            ->getMock();
+        $dispatcher->expects($this->once())
+            ->method('createResponseEvent')
+            ->will($this->returnValue($responseEvt));
+        $dispatcher->expects($this->once())
+            ->method('dispatchEvent')
+            ->with($responseEvt, 'responseReceived');
+
+        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
+        $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com');
+
+        $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $messageApi->expects($this->once())
+            ->method('sendMime')
+            ->will($this->throwException(new UnknownErrorException($exceptionMsg, $exceptionCode)));
+
+        $mailgun->expects($this->once())
+            ->method('messages')
+            ->willReturn($messageApi);
+
+
+        $message = (new \Swift_Message('Foobar'))
+             ->setFrom('alice@example.com')
+             ->setTo('bob@example.com')
+             ->setCc('tobias@example.com')
+             ->setBcc('eve@example.com')
+             ->setBody('Message body');
+
+        $failed = null;
+        $sent = $transport->send($message, $failed);
+
+        $this->assertEquals(0, $sent);
+        $this->assertEquals(['bob@example.com', 'eve@example.com', 'tobias@example.com'], $failed);
+    }
+
     /**
      * @return MailgunTransport
      */
