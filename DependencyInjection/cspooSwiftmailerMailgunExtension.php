@@ -4,10 +4,10 @@ namespace cspoo\Swiftmailer\MailgunBundle\DependencyInjection;
 
 use Mailgun\HttpClientConfigurator;
 use Mailgun\Mailgun;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader;
@@ -33,7 +33,7 @@ class cspooSwiftmailerMailgunExtension extends Extension
         $container->setParameter('mailgun.key', $config['key']);
         $container->setParameter('mailgun.domain', $config['domain']);
 
-        $definitionDecorator = new DefinitionDecorator('swiftmailer.transport.eventdispatcher.abstract');
+        $definitionDecorator = new ChildDefinition('swiftmailer.transport.eventdispatcher.abstract');
         $container->setDefinition('mailgun.swift_transport.eventdispatcher', $definitionDecorator);
 
         $container->getDefinition('mailgun.swift_transport.transport')
