@@ -6,8 +6,9 @@ use Mailgun\Connection\Exceptions\MissingEndpoint;
 use cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport;
 use Mailgun\Exception\UnknownErrorException;
 use Mailgun\Model\Message\SendResponse;
+use PHPUnit\Framework\TestCase;
 
-class MailgunTransportTest extends \PHPUnit_Framework_TestCase
+class MailgunTransportTest extends TestCase
 {
     public function testGetPostData()
     {
@@ -159,7 +160,7 @@ class MailgunTransportTest extends \PHPUnit_Framework_TestCase
         $dispatcher->expects($this->any())
             ->method('createSendEvent')
             ->willReturn($this->getMockBuilder('Swift_Events_SendEvent')->disableOriginalConstructor()->getMock());
-            
+
 
         $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
             ->disableOriginalConstructor()
