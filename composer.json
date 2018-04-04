@@ -23,7 +23,7 @@
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^4.0",
-        "matthiasnoback/symfony-dependency-injection-test": "^2.3",
+        "matthiasnoback/symfony-dependency-injection-test": "^3.0",
         "nyholm/symfony-bundle-test": "^1.4",
         "symfony/swiftmailer-bundle": "^2.5.1",
         "php-http/guzzle6-adapter": "^1.0",
