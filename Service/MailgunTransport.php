@@ -147,9 +147,12 @@ class MailgunTransport implements Swift_Transport
         $messageHeaders = $message->getHeaders();
 
         foreach ($mailgunHeaders as $headerName) {
-            /** @var \Swift_Mime_Headers_MailboxHeader $value */
-            if (null !== $value = $messageHeaders->get($headerName)) {
-                $postData[$headerName] = $value->getFieldBody();
+            $headersByName = $messageHeaders->getAll($headerName);
+            if (!empty($headersByName)) {
+                /** @var \Swift_Mime_Headers_MailboxHeader $value */
+                foreach ($headersByName as $value) {
+                    $postData[$headerName] = $value->getFieldBody();
+                }
                 $messageHeaders->removeAll($headerName);
             }
         }
