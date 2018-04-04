@@ -4,7 +4,7 @@
     "description" : "Swiftmailer Mailgun bundle",
     "keywords" : ["E-Mail", "Swiftmailer", "mailgun"],
     "homepage" : "https://github.com/tehplague/swiftmailer-mailgun-bundle",
-    "license" : "GPL-2.0+",
+    "license" : "GPL-2.0-or-later",
     "authors" :
     [
         {
