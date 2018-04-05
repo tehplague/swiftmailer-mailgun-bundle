@@ -28,9 +28,9 @@ matrix:
           env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
 
         - php: 7.2
-          env: DEPENDENCIES="symfony/force-lowest:^3"
+          env: DEPENDENCIES="dunglas/symfony-lock:^3"
         - php: 7.2
-          env: DEPENDENCIES="symfony/force-lowest:^4"
+          env: DEPENDENCIES="dunglas/symfony-lock:^4"
 
           # Latest commit to master
         - php: 7.2
