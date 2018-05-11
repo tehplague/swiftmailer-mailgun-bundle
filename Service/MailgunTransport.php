@@ -205,7 +205,7 @@ class MailgunTransport implements Swift_Transport
     }
 
     /**
-     * Not used.
+     * @deprecated not used
      */
     public function ping()
     {
