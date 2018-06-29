@@ -22,7 +22,6 @@
         "symfony/config": "^3.3 || ^4.0",
         "symfony/dependency-injection": "^3.3 || ^4.0",
         "symfony/http-kernel": "^3.3 || ^4.0",
-        "symfony/force-lowest": "^3"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^4.0",
