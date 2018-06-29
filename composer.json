@@ -21,8 +21,7 @@
         "mailgun/mailgun-php": "^2.3",
         "symfony/config": "^3.3 || ^4.0",
         "symfony/dependency-injection": "^3.3 || ^4.0",
-        "symfony/http-kernel": "^3.3 || ^4.0",
-        "symfony/force-lowest": "^3"
+        "symfony/http-kernel": "^3.3 || ^4.0"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^4.0",
