@@ -5,6 +5,7 @@ This document will tell you what changes that has been made between versions.
 # Changes from 1.0.0 to 1.1.0
 
 * Support for Symfony 4
+* Dropped support for Symfony 2
 
 # Changes from 0.4.0 to 1.0.0
 
