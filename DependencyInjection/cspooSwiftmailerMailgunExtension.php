@@ -54,6 +54,9 @@ class cspooSwiftmailerMailgunExtension extends Extension
     {
         $configuratorDef = new Definition(HttpClientConfigurator::class);
         $configuratorDef->addMethodCall('setApiKey', [$config['key']]);
+        if (!empty($config['endpoint'])) {
+            $configuratorDef->addMethodCall('setEndpoint', [$config['endpoint']]);
+        }
 
         if (!empty($config['http_client'])) {
             $configuratorDef->addMethodCall('setHttpClient', [new Reference($config['http_client'])]);

@@ -32,6 +32,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('key')->isRequired()->end()
                 ->scalarNode('domain')->isRequired()->end()
+                ->scalarNode('endpoint')->end()
                 ->scalarNode('http_client')->end()
             ->end();
     }
