@@ -1,4 +1,5 @@
 
+
 # Swiftmailer Mailgun bundle
 
 [![Latest Stable Version](https://poser.pugx.org/cspoo/swiftmailer-mailgun-bundle/v/stable)](https://packagist.org/packages/cspoo/swiftmailer-mailgun-bundle)
@@ -18,6 +19,10 @@ composer require cspoo/swiftmailer-mailgun-bundle php-http/guzzle5-adapter
 ```
 
 *Note: You can use any of [these adapters](https://packagist.org/providers/php-http/client-implementation)*
+
+## Configuration
+
+### Symfony 3.4
 
 Also add to your AppKernel:
 
@@ -44,6 +49,50 @@ swiftmailer:
 Note that the swiftmailer configuration is the same as the standard one - you just 
 change the mailer_transport parameter.
 
+### Symfony 4.1
+
+Add your Mailgun credentials 
+```bash
+# both .env and .env.dist files
+MAILGUN_DOMAIN=<your domain>
+MAILGUN_API_KEY=<your key>
+MAILGUN_SENDER=<your sender>
+```
+
+Adding to you bundle
+```php
+// config/bundles.php
+return [
+    ...
+    cspoo\Swiftmailer\MailgunBundle\cspooSwiftmailerMailgunBundle::class => ['all' => true],
+    ];
+```
+
+Configure your Mailgun credentials:
+
+```yaml
+// config/packages/mailgun.yaml
+cspoo_swiftmailer_mailgun:
+    key: '%env(MAILGUN_API_KEY)%'
+    domain: "%env(MAILGUN_DOMAIN)%"
+
+services:
+    Mailgun\Mailgun:
+        class: Mailgun\Mailgun
+        factory: ['Mailgun\Mailgun', create]
+        arguments: ['%env(MAILGUN_API_KEY)%']
+```
+
+Finally, add the following line on swiftmailer config:
+```yaml
+// config/packages/swiftmailer.yaml
+swiftmailer:
+    # url: '%env(MAILER_URL)%'
+    transport: 'mailgun'
+    spool: { type: 'memory' }
+```
+Note: Not sure if url line should be commented.
+
 ## Usage
 
 First craft a message:
@@ -66,6 +115,11 @@ Then send it as you normally would with the `mailer` service. Your configuration
 
 ```php
 $this->container->get('mailer')->send($message);
+```
+
+You can also test through terminal using:
+```bash
+bin/console swiftmailer:email:send --from=<from email> --to=<to email> --subject="Foo" --body="Bar"
 ```
 
 ## Choose HTTP client
