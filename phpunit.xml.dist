@@ -8,12 +8,9 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
-         codecoverage="true"
          bootstrap="./vendor/autoload.php"
         >
 
-    <formatter type="clover" usefile="false"/>
     <testsuites>
         <testsuite>
             <directory>./Tests</directory>
