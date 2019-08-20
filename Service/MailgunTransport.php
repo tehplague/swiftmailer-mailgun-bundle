@@ -3,6 +3,8 @@
 namespace cspoo\Swiftmailer\MailgunBundle\Service;
 
 use Mailgun\Mailgun;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Swift_Events_EventListener;
 use Swift_Events_SendEvent;
 use Swift_Message;
@@ -31,15 +33,26 @@ class MailgunTransport implements Swift_Transport
     private $eventDispatcher;
 
     /**
+     * @var LoggerInterface $logger
+     */
+    private $logger;
+
+    /**
      * @param \Swift_Events_EventDispatcher $eventDispatcher
      * @param Mailgun                       $mailgun
      * @param $domain
+     * @param LoggerInterface $logger
      */
-    public function __construct(\Swift_Events_EventDispatcher $eventDispatcher, Mailgun $mailgun, $domain)
-    {
+    public function __construct(
+        \Swift_Events_EventDispatcher $eventDispatcher,
+        Mailgun $mailgun,
+        $domain,
+        LoggerInterface $logger
+    ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->domain = $domain;
         $this->mailgun = $mailgun;
+        $this->logger = $logger;
     }
 
     /**
@@ -106,7 +119,10 @@ class MailgunTransport implements Swift_Transport
         $domain = $this->getDomain($message);
         $sent = count($postData['to']);
         try {
-            $this->mailgun->messages()->sendMime($domain, $postData['to'], $message->toString(), $postData);
+            $response = $this->mailgun->messages()->sendMime($domain, $postData['to'], $message->toString(), $postData);
+            if ($response instanceof ResponseInterface) {
+                // TODO: log response in case of api error
+            }
             $resultStatus = Swift_Events_SendEvent::RESULT_SUCCESS;
         } catch (\Exception $e) {
             $failedRecipients = $postData['to'];

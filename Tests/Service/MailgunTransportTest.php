@@ -122,7 +122,8 @@ class MailgunTransportTest extends TestCase
     {
         $dispatcher = $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock();
         $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
-        $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com');
+        $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com', $logger);
 
         $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
             ->disableOriginalConstructor()
@@ -177,6 +178,9 @@ class MailgunTransportTest extends TestCase
             ->method('messages')
             ->willReturn($messageApi);
 
-        return new MailgunTransport($dispatcher, $mailgun, 'default.com');
+        $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')
+            ->getMock();
+
+        return new MailgunTransport($dispatcher, $mailgun, 'default.com', $logger);
     }
 }
