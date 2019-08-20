@@ -112,6 +112,14 @@ class MailgunTransport implements Swift_Transport
             $failedRecipients = $postData['to'];
             $sent = 0;
             $resultStatus = Swift_Events_SendEvent::RESULT_FAILED;
+
+            $errorMessage = $e->getCode() . ' : ' . $e->getMessage();
+            if ($failEvt = $this->eventDispatcher->createResponseEvent($this, $errorMessage, false)) {
+                $this->eventDispatcher->dispatchEvent($failEvt, 'responseReceived');
+                if ($failEvt->bubbleCancelled()) {
+                    return 0;
+                }
+            }
         }
 
         if ($evt) {
