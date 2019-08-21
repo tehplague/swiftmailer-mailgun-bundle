@@ -4,7 +4,6 @@ namespace cspoo\Swiftmailer\MailgunBundle\Service;
 
 use Mailgun\Exception\HttpClientException;
 use Mailgun\Mailgun;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Swift_Events_EventListener;
 use Swift_Events_SendEvent;
