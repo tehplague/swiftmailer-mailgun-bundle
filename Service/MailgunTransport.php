@@ -2,6 +2,7 @@
 
 namespace cspoo\Swiftmailer\MailgunBundle\Service;
 
+use Mailgun\Exception\HttpClientException;
 use Mailgun\Mailgun;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -119,15 +120,21 @@ class MailgunTransport implements Swift_Transport
         $domain = $this->getDomain($message);
         $sent = count($postData['to']);
         try {
-            $response = $this->mailgun->messages()->sendMime($domain, $postData['to'], $message->toString(), $postData);
-            if ($response instanceof ResponseInterface) {
-                // TODO: log response in case of api error
-            }
+            $this->mailgun->messages()->sendMime($domain, $postData['to'], $message->toString(), $postData);
             $resultStatus = Swift_Events_SendEvent::RESULT_SUCCESS;
         } catch (\Exception $e) {
             $failedRecipients = $postData['to'];
             $sent = 0;
             $resultStatus = Swift_Events_SendEvent::RESULT_FAILED;
+            $context = [];
+            if ($e instanceof HttpClientException) {
+                $context = [
+                    'mailgun_http_response_code' => $e->getResponseCode(),
+                    'mailgun_http_response_reason' => $e->getResponse()->getReasonPhrase(),
+                    'mailgun_http_response_body' => $e->getResponseBody()
+                ];
+            }
+            $this->logger->error($e->getMessage(), $context);
         }
 
         if ($evt) {
