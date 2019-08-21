@@ -121,23 +121,7 @@ class MailgunTransport implements Swift_Transport
         try {
             $response = $this->mailgun->messages()->sendMime($domain, $postData['to'], $message->toString(), $postData);
             if ($response instanceof ResponseInterface) {
-                // Log response in case of api error
-                $statusCode = $response->getStatusCode();
-                $context = [
-                    'mailgun_http_response_code' => $statusCode,
-                    'mailgun_http_response_reason_phrase' => $response->getReasonPhrase()
-                ];
-
-                if ($statusCode > 399 && $statusCode < 500) {
-                    $this->logger->warning(
-                        "Mailgun API is telling us we're doing something wrong",
-                        $context
-                    );
-                    throw new \Exception();
-                } elseif ($statusCode > 499 && $statusCode < 600) {
-                    $this->logger->error("Mailgun API produced an error", $context);
-                    throw new \Exception();
-                }
+                // TODO: log response in case of api error
             }
             $resultStatus = Swift_Events_SendEvent::RESULT_SUCCESS;
         } catch (\Exception $e) {
