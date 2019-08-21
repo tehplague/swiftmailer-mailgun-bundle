@@ -4,9 +4,12 @@ namespace cspoo\Swiftmailer\MailgunBundle\Tests\Service;
 
 use Mailgun\Connection\Exceptions\MissingEndpoint;
 use cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport;
+use Mailgun\Exception\HttpClientException;
 use Mailgun\Exception\UnknownErrorException;
 use Mailgun\Model\Message\SendResponse;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class MailgunTransportTest extends TestCase
 {
@@ -123,6 +126,9 @@ class MailgunTransportTest extends TestCase
         $dispatcher = $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock();
         $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+        $logger->expects($this->once())
+            ->method('error');
+
         $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com', $logger);
 
         $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
@@ -144,6 +150,71 @@ class MailgunTransportTest extends TestCase
              ->setCc('tobias@example.com')
              ->setBcc('eve@example.com')
              ->setBody('Message body');
+
+        $failed = null;
+        $sent = $transport->send($message, $failed);
+
+        $this->assertEquals(0, $sent);
+        $this->assertEquals(['bob@example.com', 'eve@example.com', 'tobias@example.com'], $failed);
+    }
+
+    public function testSendMessageWithHttpClientException()
+    {
+        $dispatcher = $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock();
+        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
+        $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
+
+        $logger->expects($this->once())
+            ->method('error')
+            ->with('Your credentials are incorrect.', [
+                'mailgun_http_response_code' => 401,
+                'mailgun_http_response_reason' => 'UNAUTHORIZED',
+                'mailgun_http_response_body' => ['message' => 'Forbidden']
+            ]);
+
+        $transport = new MailgunTransport($dispatcher, $mailgun, 'default.com', $logger);
+
+        $responseBody = $this->getMockBuilder(StreamInterface::class)
+            ->getMock();
+
+        $responseBody->expects($this->any())
+            ->method('__toString')
+            ->willReturn('Forbidden');
+
+        $response = $this->getMockBuilder(ResponseInterface::class)
+            ->getMock();
+
+        $response->expects($this->any())
+            ->method('getBody')
+            ->willReturn($responseBody);
+
+        $response->expects($this->any())
+            ->method('getStatusCode')
+            ->willReturn(401);
+
+        $response->expects($this->any())
+            ->method('getReasonPhrase')
+            ->willReturn('UNAUTHORIZED');
+
+        $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $messageApi->expects($this->once())
+            ->method('sendMime')
+            ->will($this->throwException(HttpClientException::unauthorized($response)));
+
+        $mailgun->expects($this->once())
+            ->method('messages')
+            ->willReturn($messageApi);
+
+
+        $message = (new \Swift_Message('Foobar'))
+            ->setFrom('alice@example.com')
+            ->setTo('bob@example.com')
+            ->setCc('tobias@example.com')
+            ->setBcc('eve@example.com')
+            ->setBody('Message body');
 
         $failed = null;
         $sent = $transport->send($message, $failed);
