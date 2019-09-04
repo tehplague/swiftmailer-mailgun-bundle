@@ -2,7 +2,9 @@
 
 namespace cspoo\Swiftmailer\MailgunBundle\Service;
 
+use Mailgun\Exception\HttpClientException;
 use Mailgun\Mailgun;
+use Psr\Log\LoggerInterface;
 use Swift_Events_EventListener;
 use Swift_Events_SendEvent;
 use Swift_Message;
@@ -31,15 +33,26 @@ class MailgunTransport implements Swift_Transport
     private $eventDispatcher;
 
     /**
+     * @var LoggerInterface $logger
+     */
+    private $logger;
+
+    /**
      * @param \Swift_Events_EventDispatcher $eventDispatcher
      * @param Mailgun                       $mailgun
      * @param $domain
+     * @param LoggerInterface $logger
      */
-    public function __construct(\Swift_Events_EventDispatcher $eventDispatcher, Mailgun $mailgun, $domain)
-    {
+    public function __construct(
+        \Swift_Events_EventDispatcher $eventDispatcher,
+        Mailgun $mailgun,
+        $domain,
+        LoggerInterface $logger
+    ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->domain = $domain;
         $this->mailgun = $mailgun;
+        $this->logger = $logger;
     }
 
     /**
@@ -112,6 +125,15 @@ class MailgunTransport implements Swift_Transport
             $failedRecipients = $postData['to'];
             $sent = 0;
             $resultStatus = Swift_Events_SendEvent::RESULT_FAILED;
+            $context = [];
+            if ($e instanceof HttpClientException) {
+                $context = [
+                    'mailgun_http_response_code' => $e->getResponseCode(),
+                    'mailgun_http_response_reason' => $e->getResponse()->getReasonPhrase(),
+                    'mailgun_http_response_body' => $e->getResponseBody()
+                ];
+            }
+            $this->logger->error($e->getMessage(), $context);
         }
 
         if ($evt) {

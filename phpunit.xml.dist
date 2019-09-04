@@ -8,14 +8,11 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
-         codecoverage="true"
          bootstrap="./vendor/autoload.php"
         >
 
-    <formatter type="clover" usefile="false"/>
     <testsuites>
-        <testsuite>
+        <testsuite name="All Tests">
             <directory>./Tests</directory>
         </testsuite>
     </testsuites>
@@ -29,4 +26,8 @@
             </exclude>
         </whitelist>
     </filter>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\CoverageListener"/>
+    </listeners>
 </phpunit>
