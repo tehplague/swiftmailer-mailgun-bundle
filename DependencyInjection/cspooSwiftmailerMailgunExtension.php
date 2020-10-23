@@ -2,7 +2,7 @@
 
 namespace cspoo\Swiftmailer\MailgunBundle\DependencyInjection;
 
-use Mailgun\HttpClientConfigurator;
+use Mailgun\HttpClient\HttpClientConfigurator;
 use Mailgun\Mailgun;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
