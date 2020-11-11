@@ -18,7 +18,7 @@
     "require": {
         "php": "^7.0",
         "swiftmailer/swiftmailer": "^6.0",
-        "mailgun/mailgun-php": "^2.3",
+        "mailgun/mailgun-php": "^3.0",
         "symfony/config": "^3.3 || ^4.0",
         "symfony/dependency-injection": "^3.3 || ^4.0",
         "symfony/http-kernel": "^3.3 || ^4.0",
