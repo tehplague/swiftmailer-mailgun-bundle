@@ -15,10 +15,10 @@ http interface for sending messages.
 ## Installation
 
 ```bash
-composer require cspoo/swiftmailer-mailgun-bundle php-http/guzzle5-adapter
+composer require cspoo/swiftmailer-mailgun-bundle kriswallsmith/buzz nyholm/psr7
 ```
 
-*Note: You can use any of [these adapters](https://packagist.org/providers/php-http/client-implementation)*
+*Note: `kriswallsmith/buzz` and `nyholm/psr7` are suggestions, you have the flexibility to choose what [PSR-7 implementation and HTTP client](https://packagist.org/providers/php-http/client-implementation) you want to use.*
 
 ## Configuration
 
