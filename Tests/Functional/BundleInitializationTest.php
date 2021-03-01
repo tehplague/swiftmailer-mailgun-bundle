@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Funtional;
+namespace cspoo\Swiftmailer\MailgunBundle\Tests\Functional;
 
 use cspoo\Swiftmailer\MailgunBundle\cspooSwiftmailerMailgunBundle;
 use cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport;

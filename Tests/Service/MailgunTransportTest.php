@@ -2,7 +2,6 @@
 
 namespace cspoo\Swiftmailer\MailgunBundle\Tests\Service;
 
-use Mailgun\Connection\Exceptions\MissingEndpoint;
 use cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport;
 use Mailgun\Exception\HttpClientException;
 use Mailgun\Exception\UnknownErrorException;
@@ -18,7 +17,7 @@ class MailgunTransportTest extends TestCase
         $class = 'cspoo\Swiftmailer\MailgunBundle\Service\MailgunTransport';
         $transport = $this->getMockBuilder($class)
         ->disableOriginalConstructor()
-        ->setMethods(array('prepareRecipients'))
+        ->onlyMethods(array('prepareRecipients'))
         ->getMock();
 
         $transport->expects($this->once())
@@ -124,7 +123,7 @@ class MailgunTransportTest extends TestCase
     public function testSendMessageWithException()
     {
         $dispatcher = $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock();
-        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
+        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->disableOriginalConstructor()->getMock();
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
         $logger->expects($this->once())
             ->method('error');
@@ -161,7 +160,7 @@ class MailgunTransportTest extends TestCase
     public function testSendMessageWithHttpClientException()
     {
         $dispatcher = $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock();
-        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
+        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->disableOriginalConstructor()->getMock();
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
 
         $logger->expects($this->once())
@@ -187,6 +186,8 @@ class MailgunTransportTest extends TestCase
         $response->expects($this->any())
             ->method('getBody')
             ->willReturn($responseBody);
+
+        $response->method('getHeaderLine')->with('Content-Type')->willReturn('text/plain');
 
         $response->expects($this->any())
             ->method('getStatusCode')
@@ -243,6 +244,7 @@ class MailgunTransportTest extends TestCase
             ->willReturn(SendResponse::create(['id'=>'123', 'message'=>'OK']));
 
         $mailgun = $this->getMockBuilder('Mailgun\Mailgun')
+            ->disableOriginalConstructor()
             ->getMock();
 
         $mailgun->expects($this->any())

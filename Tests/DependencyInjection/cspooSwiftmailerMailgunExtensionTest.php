@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Definition;
  */
 class cspooSwiftmailerMailgunExtensionTest extends AbstractExtensionTestCase
 {
-    protected function getContainerExtensions()
+    protected function getContainerExtensions(): array
     {
         return array(
             new cspooSwiftmailerMailgunExtension()
@@ -21,7 +21,7 @@ class cspooSwiftmailerMailgunExtensionTest extends AbstractExtensionTestCase
     /**
      * @inheritDoc
      */
-    protected function getMinimalConfiguration()
+    protected function getMinimalConfiguration(): array
     {
         return array('key' => 'foo', 'domain' => 'bar', 'endpoint' => 'baz');
     }
