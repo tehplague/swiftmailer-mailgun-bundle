@@ -2,7 +2,7 @@
 
 namespace cspoo\Swiftmailer\MailgunBundle\DependencyInjection;
 
-use Mailgun\HttpClientConfigurator;
+use Mailgun\HttpClient\HttpClientConfigurator;
 use Mailgun\Mailgun;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -63,8 +63,7 @@ class cspooSwiftmailerMailgunExtension extends Extension
         }
 
         $mailgunDef = new Definition(Mailgun::class);
-        $mailgunDef->setFactory([Mailgun::class, 'configure'])
-            ->addArgument($configuratorDef);
+        $mailgunDef->addArgument($configuratorDef);
 
         $container->setDefinition('mailgun.library', $mailgunDef);
     }
