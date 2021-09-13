@@ -38,7 +38,6 @@ cspoo_swiftmailer_mailgun:
     key: "key-xxxxxxxxxx"
     domain: "mydomain.com"
     endpoint: "https://api.eu.mailgun.net" # Optional. Use this config for EU region. Defaults to "https://api.mailgun.net"
-    http_client: "httplug.client" # Optional. Defaults to null and uses discovery to find client. 
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -75,6 +74,7 @@ Configure your Mailgun credentials:
 cspoo_swiftmailer_mailgun:
     key: '%env(MAILGUN_API_KEY)%'
     domain: "%env(MAILGUN_DOMAIN)%"
+    endpoint: "https://api.eu.mailgun.net" # Optional. Use this config for EU region. Defaults to "https://api.mailgun.net"
 
 services:
     Mailgun\Mailgun:
@@ -91,11 +91,18 @@ swiftmailer:
     transport: 'mailgun'
     spool: { type: 'memory' }
 ```
-Note: Not sure if url line should be commented.
+Comment url line to not interfere with default configuration.
 
 ## Usage
 
-First craft a message:
+First get the `mailer` service from the container.
+```php
+$mailer = $this->container->get('mailer');
+```
+
+Alternatively, if you use [DependencyInjection](https://symfony.com/doc/current/components/dependency_injection.html) declare `\Swift_Mailer $mailer` as parameter.
+
+Craft a message and send it as you normally would. Your configuration ensures that you will be using the Mailgun transport.
 
 ```php
 $message = \Swift_Message::newInstance()
@@ -109,12 +116,7 @@ $message = \Swift_Message::newInstance()
             )
         )
     ;
-```
-
-Then send it as you normally would with the `mailer` service. Your configuration ensures that you will be using the Mailgun transport.
-
-```php
-$this->container->get('mailer')->send($message);
+$mailer->send($message);
 ```
 
 You can also test through terminal using:
@@ -130,9 +132,9 @@ find an installed client or you can use [HttplugBundle](https://github.com/php-h
 to the mailgun configuration. 
 
 ``` yaml
-// app/config/config.yml:
+// app/config/mailgun.yaml:
 cspoo_swiftmailer_mailgun:
-    http_client: 'httplug.client'
+    http_client: 'httplug.client' # Optional. Defaults to null and uses discovery to find client.
 ```
 
 
