@@ -47,7 +47,7 @@ class MailgunTransport implements Swift_Transport
         \Swift_Events_EventDispatcher $eventDispatcher,
         Mailgun $mailgun,
         $domain,
-        LoggerInterface $logger
+        LoggerInterface $logger = null
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->domain = $domain;
@@ -97,7 +97,7 @@ class MailgunTransport implements Swift_Transport
      * @param string[]           $failedRecipients An array of failures by-reference
      *
      * @throws \Swift_TransportException
-     * 
+     *
      * @return int number of mails sent
      */
     public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
@@ -133,7 +133,9 @@ class MailgunTransport implements Swift_Transport
                     'mailgun_http_response_body' => $e->getResponseBody()
                 ];
             }
-            $this->logger->error($e->getMessage(), $context);
+            if($this->logger) {
+                $this->logger->error($e->getMessage(), $context);
+            }
         }
 
         if ($evt) {

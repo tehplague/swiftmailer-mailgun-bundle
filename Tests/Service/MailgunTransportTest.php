@@ -124,7 +124,7 @@ class MailgunTransportTest extends TestCase
     public function testSendMessageWithException()
     {
         $dispatcher = $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock();
-        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
+        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->disableOriginalConstructor()->getMock();
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
         $logger->expects($this->once())
             ->method('error');
@@ -161,7 +161,7 @@ class MailgunTransportTest extends TestCase
     public function testSendMessageWithHttpClientException()
     {
         $dispatcher = $this->getMockBuilder('Swift_Events_EventDispatcher')->getMock();
-        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->getMock();
+        $mailgun = $this->getMockBuilder('Mailgun\Mailgun')->disableOriginalConstructor()->getMock();
         $logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
 
         $logger->expects($this->once())
@@ -195,6 +195,10 @@ class MailgunTransportTest extends TestCase
         $response->expects($this->any())
             ->method('getReasonPhrase')
             ->willReturn('UNAUTHORIZED');
+
+        $response->expects($this->any())
+            ->method('getHeaderLine')
+            ->willReturn('');
 
         $messageApi = $this->getMockBuilder('Mailgun\Api\Message')
             ->disableOriginalConstructor()
@@ -243,6 +247,7 @@ class MailgunTransportTest extends TestCase
             ->willReturn(SendResponse::create(['id'=>'123', 'message'=>'OK']));
 
         $mailgun = $this->getMockBuilder('Mailgun\Mailgun')
+            ->disableOriginalConstructor()
             ->getMock();
 
         $mailgun->expects($this->any())
